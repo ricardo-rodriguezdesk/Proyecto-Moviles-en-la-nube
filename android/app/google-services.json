@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "836658534715",
+    "project_id": "lumen-vivero",
+    "storage_bucket": "lumen-vivero.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836658534715:android:859d0e39f8520103a37f1e",
+        "android_client_info": {
+          "package_name": "com.ricardoarellano.lumen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgi8UCkFZ3MrX_uFEQglrUjuaEcOGkRqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
