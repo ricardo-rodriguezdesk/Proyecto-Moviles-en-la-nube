@@ -1,18 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/onboarding_provider.dart';
+import '../../providers/session_provider.dart';
 import '../../providers/theme_provider.dart';
 
-/// Pantalla temporal para comprobar que Firebase, el tema y las fuentes funcionan.
+/// Pantalla temporal: comprueba que el login funciona.
+/// Más adelante será el dashboard real.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
+    final session = context.watch<SessionProvider>();
+    final user = session.user;
     final isDark = themeProvider.isDark(context);
     final text = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
+
+    final name = (user?.displayName?.isNotEmpty ?? false)
+        ? user!.displayName!
+        : (user?.email ?? 'Usuario');
+    final photo = user?.photoURL;
 
     return Scaffold(
       appBar: AppBar(
@@ -23,6 +33,11 @@ class HomeScreen extends StatelessWidget {
             icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
             onPressed: () => themeProvider.toggle(context),
           ),
+          IconButton(
+            tooltip: 'Cerrar sesión',
+            icon: const Icon(Icons.logout),
+            onPressed: session.signOut,
+          ),
         ],
       ),
       body: Center(
@@ -31,17 +46,33 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.eco, size: 72, color: scheme.primary),
-              const SizedBox(height: 16),
-              Text(
-                'Plantas que sí sobreviven a tu casa',
-                textAlign: TextAlign.center,
-                style: text.headlineMedium,
+              CircleAvatar(
+                radius: 48,
+                backgroundColor: scheme.primaryContainer,
+                backgroundImage: photo != null ? NetworkImage(photo) : null,
+                child: photo == null
+                    ? Icon(Icons.person, size: 48, color: scheme.primary)
+                    : null,
               ),
+              const SizedBox(height: 16),
+              Text('Hola, $name',
+                  textAlign: TextAlign.center, style: text.headlineMedium),
               const SizedBox(height: 8),
               Text(
-                'Firebase conectado ✓',
-                style: text.bodyLarge?.copyWith(color: scheme.primary),
+                'Sesión con: ${user?.providerData.map((p) => p.providerId).join(', ')}',
+                style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                session.canEditPhoto
+                    ? 'Puedes cambiar tu foto (cuenta de correo)'
+                    : 'Tu foto viene de tu proveedor',
+                style: text.bodyMedium?.copyWith(color: scheme.primary),
+              ),
+              const SizedBox(height: 32),
+              TextButton(
+                onPressed: context.read<OnboardingProvider>().reset,
+                child: const Text('Ver onboarding otra vez (prueba)'),
               ),
             ],
           ),
