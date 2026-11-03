@@ -24,17 +24,29 @@ class AppTheme {
       brightness: brightness,
     );
 
-    final body = GoogleFonts.interTextTheme(base.textTheme);
+    // Aplicamos las fuentes estilo por estilo (TextStyle) en lugar de usar
+    // GoogleFonts.interTextTheme, que en esta versión choca con el TextTheme
+    // de Flutter (google_fonts 9 usa el paquete material_ui).
+    final t = base.textTheme;
+    TextStyle? sans(TextStyle? s) => GoogleFonts.inter(textStyle: s);
     TextStyle? serif(TextStyle? s) => GoogleFonts.fraunces(textStyle: s);
 
-    final textTheme = body.copyWith(
-      displayLarge: serif(body.displayLarge),
-      displayMedium: serif(body.displayMedium),
-      displaySmall: serif(body.displaySmall),
-      headlineLarge: serif(body.headlineLarge),
-      headlineMedium: serif(body.headlineMedium),
-      headlineSmall: serif(body.headlineSmall),
-      titleLarge: serif(body.titleLarge)?.copyWith(fontWeight: FontWeight.w600),
+    final textTheme = TextTheme(
+      displayLarge: serif(t.displayLarge),
+      displayMedium: serif(t.displayMedium),
+      displaySmall: serif(t.displaySmall),
+      headlineLarge: serif(t.headlineLarge),
+      headlineMedium: serif(t.headlineMedium),
+      headlineSmall: serif(t.headlineSmall),
+      titleLarge: serif(t.titleLarge)?.copyWith(fontWeight: FontWeight.w600),
+      titleMedium: sans(t.titleMedium),
+      titleSmall: sans(t.titleSmall),
+      bodyLarge: sans(t.bodyLarge),
+      bodyMedium: sans(t.bodyMedium),
+      bodySmall: sans(t.bodySmall),
+      labelLarge: sans(t.labelLarge),
+      labelMedium: sans(t.labelMedium),
+      labelSmall: sans(t.labelSmall),
     );
 
     return base.copyWith(
