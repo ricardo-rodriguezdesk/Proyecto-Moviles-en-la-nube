@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/plant.dart';
@@ -42,10 +43,12 @@ class PlantVisual extends StatelessWidget {
       borderRadius: BorderRadius.circular(borderRadius),
       child: plant.imageUrl.isEmpty
           ? fallback
-          : Image.network(
-              plant.imageUrl,
+          // Se guarda en el dispositivo: la segunda vez carga sin internet.
+          : CachedNetworkImage(
+              imageUrl: plant.imageUrl,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => fallback,
+              placeholder: (_, __) => fallback,
+              errorWidget: (_, __, ___) => fallback,
             ),
     );
   }

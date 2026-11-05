@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -268,6 +269,19 @@ class _ProfileView extends StatelessWidget {
                           color: scheme.primary),
                       title: const Text('Ver bienvenida otra vez'),
                       onTap: context.read<OnboardingProvider>().reset,
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: Icon(Icons.cleaning_services_outlined,
+                          color: scheme.primary),
+                      title: const Text('Borrar imágenes guardadas'),
+                      subtitle: const Text(
+                          'Las fotos se guardan para verse sin internet'),
+                      onTap: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        await DefaultCacheManager().emptyCache();
+                        showMessage(messenger, 'Caché de imágenes borrada');
+                      },
                     ),
                   ],
                 ),

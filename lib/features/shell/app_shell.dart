@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../widgets/offline_banner.dart';
+
 class _Destination {
   const _Destination(this.label, this.icon, this.selectedIcon);
   final String label;
@@ -82,7 +84,14 @@ class AppShell extends StatelessWidget {
                   },
                 ),
                 const VerticalDivider(width: 1),
-                Expanded(child: navigationShell),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(child: navigationShell),
+                      const OfflineBanner(),
+                    ],
+                  ),
+                ),
               ],
             ),
           );
@@ -90,16 +99,22 @@ class AppShell extends StatelessWidget {
 
         return Scaffold(
           body: navigationShell,
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: navigationShell.currentIndex,
-            onDestinationSelected: _onSelect,
-            destinations: [
-              for (final d in _destinations)
-                NavigationDestination(
-                  icon: Icon(d.icon),
-                  selectedIcon: Icon(d.selectedIcon),
-                  label: d.label,
-                ),
+          bottomNavigationBar: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const OfflineBanner(),
+              NavigationBar(
+                selectedIndex: navigationShell.currentIndex,
+                onDestinationSelected: _onSelect,
+                destinations: [
+                  for (final d in _destinations)
+                    NavigationDestination(
+                      icon: Icon(d.icon),
+                      selectedIcon: Icon(d.selectedIcon),
+                      label: d.label,
+                    ),
+                ],
+              ),
             ],
           ),
         );
