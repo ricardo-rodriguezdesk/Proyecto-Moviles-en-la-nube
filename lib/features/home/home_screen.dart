@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/notification_inbox.dart';
 import '../../providers/onboarding_provider.dart';
 import '../../providers/session_provider.dart';
 import '../../providers/theme_provider.dart';
@@ -28,6 +30,18 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Lumen'),
         actions: [
+          IconButton(
+            tooltip: 'Notificaciones',
+            icon: Badge(
+              isLabelVisible: context.watch<NotificationInbox>().unread > 0,
+              label: Text('${context.watch<NotificationInbox>().unread}'),
+              child: const Icon(Icons.notifications_outlined),
+            ),
+            onPressed: () {
+              context.read<NotificationInbox>().markAllRead();
+              context.push('/notifications');
+            },
+          ),
           IconButton(
             tooltip: isDark ? 'Modo claro' : 'Modo oscuro',
             icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),

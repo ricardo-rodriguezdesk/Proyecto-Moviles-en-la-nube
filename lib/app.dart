@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import 'core/app_keys.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/theme_provider.dart';
 
@@ -18,6 +19,9 @@ class LumenApp extends StatelessWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: themeMode,
+      // Permite que el listener global de notificaciones muestre avisos
+      // en cualquier pantalla.
+      scaffoldMessengerKey: rootMessengerKey,
       routerConfig: context.read<GoRouter>(),
     );
   }
