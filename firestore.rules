@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// Reglas de seguridad de Cloud Firestore para Lumen.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Catálogo del vivero: cualquier usuario con sesión puede leerlo.
+    // La escritura está abierta a usuarios con sesión SOLO para cargar el
+    // catálogo de ejemplo. Antes de entregar: cambiar a `if false`.
+    match /plants/{plantId} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+
+    match /plans/{planId} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+
+    // Cada usuario solo puede leer y escribir su propio perfil
+    // y sus propias notificaciones.
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+
+      match /notifications/{notificationId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+  }
+}

@@ -9,12 +9,14 @@ import 'app.dart';
 import 'core/app_keys.dart';
 import 'core/router/app_router.dart';
 import 'firebase_options.dart';
+import 'providers/catalog_provider.dart';
 import 'providers/notification_inbox.dart';
 import 'providers/onboarding_provider.dart';
 import 'providers/session_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/topics_provider.dart';
 import 'services/auth_service.dart';
+import 'services/firestore_service.dart';
 import 'services/notification_service.dart';
 
 Future<void> main() async {
@@ -29,15 +31,36 @@ Future<void> main() async {
 
   final prefs = await SharedPreferences.getInstance();
 
-  // Servicios y estado global. Se crean aquí (y no dentro de los providers)
-  // porque el listener de notificaciones necesita el router y la bandeja.
+  // Servicios.
   final authService = AuthService();
+  final firestore = FirestoreService();
+
+  // Estado global.
   final theme = ThemeProvider(prefs);
   final onboarding = OnboardingProvider(prefs);
   final session = SessionProvider(authService);
-  final inbox = NotificationInbox();
+  final inbox = NotificationInbox(firestore);
   final topics = TopicsProvider(prefs);
+  final catalog = CatalogProvider(firestore);
   final router = createRouter(session: session, onboarding: onboarding);
+
+  // Cuando cambia la sesión: crear/actualizar el perfil en Firestore,
+  // conectar la bandeja de notificaciones y el catálogo.
+  String? lastUid;
+  void syncSession() {
+    final user = session.user;
+    inbox.attachUser(user?.uid);
+    catalog.setActive(user != null);
+    if (user != null && user.uid != lastUid) {
+      firestore.ensureUserDoc(user).catchError(
+            (Object e) => debugPrint('[Firestore] Perfil no guardado: $e'),
+          );
+    }
+    lastUid = user?.uid;
+  }
+
+  session.addListener(syncSession);
+  syncSession();
 
   final notifications = NotificationService(
     router: router,
@@ -50,12 +73,14 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         Provider<AuthService>.value(value: authService),
+        Provider<FirestoreService>.value(value: firestore),
         Provider<GoRouter>.value(value: router),
         ChangeNotifierProvider.value(value: theme),
         ChangeNotifierProvider.value(value: onboarding),
         ChangeNotifierProvider.value(value: session),
         ChangeNotifierProvider.value(value: inbox),
         ChangeNotifierProvider.value(value: topics),
+        ChangeNotifierProvider.value(value: catalog),
       ],
       child: const LumenApp(),
     ),
