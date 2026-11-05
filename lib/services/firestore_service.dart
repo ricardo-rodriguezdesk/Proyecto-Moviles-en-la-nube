@@ -77,6 +77,15 @@ class FirestoreService {
     await ref.set(data, SetOptions(merge: true));
   }
 
+  Future<void> updateProfile(String uid, {String? name, String? photoUrl}) {
+    final data = <String, dynamic>{
+      if (name != null) 'name': name,
+      if (photoUrl != null) 'photoUrl': photoUrl,
+      'updatedAt': FieldValue.serverTimestamp(),
+    };
+    return _users.doc(uid).set(data, SetOptions(merge: true));
+  }
+
   Future<void> saveFcmToken(String uid, String token) =>
       _users.doc(uid).set({'fcmToken': token}, SetOptions(merge: true));
 

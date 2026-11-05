@@ -130,7 +130,8 @@ class NotificationService {
   /// navegamos ahí. Si no, abrimos la bandeja de notificaciones.
   void _openRoute(RemoteMessage message) {
     final route = message.data['route']?.toString();
-    router.go(
+    // push (y no go) para que la pantalla tenga botón de regresar.
+    router.push(
         (route != null && route.startsWith('/')) ? route : '/notifications');
   }
 

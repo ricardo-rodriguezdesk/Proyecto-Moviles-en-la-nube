@@ -65,6 +65,18 @@ class AuthService {
 
   Future<void> signOut() => _auth.signOut();
 
+  // ---------- Perfil ----------
+  // Al cambiar el nombre o la foto, userChanges() emite y SessionProvider
+  // avisa a todas las pantallas (inicio, perfil...) para que se actualicen.
+
+  Future<void> updateDisplayName(String name) async {
+    await _auth.currentUser?.updateDisplayName(name.trim());
+  }
+
+  Future<void> updatePhotoUrl(String url) async {
+    await _auth.currentUser?.updatePhotoURL(url);
+  }
+
   // ---------- Mensajes de error en español ----------
 
   /// Devuelve null cuando el usuario canceló (no hay nada que mostrar).

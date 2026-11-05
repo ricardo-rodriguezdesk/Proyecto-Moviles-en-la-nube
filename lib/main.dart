@@ -18,6 +18,7 @@ import 'providers/topics_provider.dart';
 import 'services/auth_service.dart';
 import 'services/firestore_service.dart';
 import 'services/notification_service.dart';
+import 'services/storage_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,7 @@ Future<void> main() async {
   // Servicios.
   final authService = AuthService();
   final firestore = FirestoreService();
+  final storage = StorageService();
 
   // Estado global.
   final theme = ThemeProvider(prefs);
@@ -74,6 +76,7 @@ Future<void> main() async {
       providers: [
         Provider<AuthService>.value(value: authService),
         Provider<FirestoreService>.value(value: firestore),
+        Provider<StorageService>.value(value: storage),
         Provider<GoRouter>.value(value: router),
         ChangeNotifierProvider.value(value: theme),
         ChangeNotifierProvider.value(value: onboarding),
