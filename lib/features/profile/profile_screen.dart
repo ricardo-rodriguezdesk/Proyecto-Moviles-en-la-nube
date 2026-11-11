@@ -265,6 +265,14 @@ class _ProfileView extends StatelessWidget {
                     ),
                     const Divider(height: 1),
                     ListTile(
+                      leading:
+                          Icon(Icons.storefront, color: scheme.primary),
+                      title: const Text('Ubicación del vivero'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/store'),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
                       leading: Icon(Icons.replay_outlined,
                           color: scheme.primary),
                       title: const Text('Ver bienvenida otra vez'),

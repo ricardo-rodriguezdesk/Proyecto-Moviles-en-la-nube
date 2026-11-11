@@ -107,6 +107,23 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: _LightCard(onTap: () => context.go('/light')),
               ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: scheme.primaryContainer,
+                      child: Icon(Icons.storefront, color: scheme.primary),
+                    ),
+                    title: const Text('Visita el vivero'),
+                    subtitle: const Text('Ubicación, horarios y cómo llegar'),
+                    trailing: const Icon(Icons.map_outlined),
+                    onTap: () => context.push('/store'),
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
 
               if (catalog.loading)
