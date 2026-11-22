@@ -19,13 +19,27 @@ class LumenApp extends StatelessWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: themeMode,
+      // Scroll con rebote suave (estilo iPhone) en toda la app, en lugar
+      // del efecto de "estirar" de Android 12+.
+      scrollBehavior: const _LumenScrollBehavior(),
       // Permite que el listener global de notificaciones muestre avisos
       // en cualquier pantalla.
-      // Sin el efecto de "estirar" de Android 12+ al llegar al final de
-      // una lista: el scroll simplemente se detiene.
-      scrollBehavior: const MaterialScrollBehavior().copyWith(overscroll: false),
       scaffoldMessengerKey: rootMessengerKey,
       routerConfig: context.read<GoRouter>(),
     );
   }
+}
+
+class _LumenScrollBehavior extends MaterialScrollBehavior {
+  const _LumenScrollBehavior();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) =>
+      const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics());
+
+  // Con rebote no hace falta el indicador de fin de lista.
+  @override
+  Widget buildOverscrollIndicator(
+          BuildContext context, Widget child, ScrollableDetails details) =>
+      child;
 }

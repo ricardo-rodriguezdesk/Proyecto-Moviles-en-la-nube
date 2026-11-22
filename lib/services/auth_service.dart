@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 /// Toda la comunicación con Firebase Authentication pasa por aquí.
 /// Las pantallas nunca llaman a FirebaseAuth directamente.
@@ -52,10 +53,39 @@ class AuthService {
 
   // ---------- Proveedores externos ----------
 
+  /// ID de cliente WEB de Firebase (oauth_client tipo 3 en
+  /// google-services.json). Lo pide Google para emitir el idToken.
+  static const _googleWebClientId =
+      '836658534715-4saivlg6trrs94ag1bcrlckbsvd7v1f8.apps.googleusercontent.com';
+  bool _googleReady = false;
+
+  /// Inicio de sesión con Google usando la ventana NATIVA de cuentas de
+  /// Android (Credential Manager), sin abrir el navegador.
   Future<void> signInWithGoogle() async {
-    final provider = GoogleAuthProvider()
-      ..setCustomParameters({'prompt': 'select_account'});
-    await _auth.signInWithProvider(provider);
+    final google = GoogleSignIn.instance;
+    if (!_googleReady) {
+      await google.initialize(serverClientId: _googleWebClientId);
+      _googleReady = true;
+    }
+    try {
+      final account = await google.authenticate();
+      final idToken = account.authentication.idToken;
+      if (idToken == null) {
+        throw FirebaseAuthException(
+            code: 'invalid-credential', message: 'Google no devolvió el token.');
+      }
+      await _auth.signInWithCredential(
+        GoogleAuthProvider.credential(idToken: idToken),
+      );
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        throw FirebaseAuthException(code: 'canceled');
+      }
+      throw FirebaseAuthException(
+        code: 'google-sign-in',
+        message: 'No se pudo iniciar sesión con Google (${e.code.name}).',
+      );
+    }
   }
 
   Future<void> signInWithGithub() async {
@@ -63,7 +93,13 @@ class AuthService {
     await _auth.signInWithProvider(provider);
   }
 
-  Future<void> signOut() => _auth.signOut();
+  Future<void> signOut() async {
+    // También se cierra la sesión de Google para poder elegir otra cuenta.
+    try {
+      if (_googleReady) await GoogleSignIn.instance.signOut();
+    } catch (_) {}
+    await _auth.signOut();
+  }
 
   // ---------- Perfil ----------
   // Al cambiar el nombre o la foto, userChanges() emite y SessionProvider
