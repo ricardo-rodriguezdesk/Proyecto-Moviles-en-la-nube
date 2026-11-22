@@ -17,9 +17,12 @@ class StoreInfo {
     ('Domingo', 'Cerrado'),
   ];
 
-  /// Abre la ruta en la app de mapas del teléfono.
+  /// Abre la app de mapas con un pin llamado "Vivero Lumen" en la
+  /// ubicación exacta (con una URL normal, Maps toma el negocio real más
+  /// cercano a esas coordenadas).
   static Uri get directionsUri => Uri.parse(
-        'https://www.google.com/maps/dir/?api=1'
-        '&destination=${location.latitude},${location.longitude}',
+        'geo:${location.latitude},${location.longitude}'
+        '?q=${location.latitude},${location.longitude}'
+        '(${Uri.encodeComponent(name)})',
       );
 }
