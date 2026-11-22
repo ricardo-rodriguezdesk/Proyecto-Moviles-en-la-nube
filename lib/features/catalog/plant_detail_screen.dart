@@ -148,10 +148,7 @@ class _PlantDetailView extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
-                        onPressed: () => ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text('Las suscripciones llegan pronto 🌱'),
-                        )),
+                        onPressed: () => context.push('/plans'),
                         icon: const Icon(Icons.add_shopping_cart),
                         label: const Text('Incluir en mi suscripción'),
                         style: OutlinedButton.styleFrom(

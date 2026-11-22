@@ -12,6 +12,8 @@ import '../../features/home/home_screen.dart';
 import '../../features/light/light_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
+import '../../features/plans/checkout_screen.dart';
+import '../../features/plans/plans_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/shell/app_shell.dart';
 import '../../features/store/store_map_screen.dart';
@@ -105,6 +107,17 @@ GoRouter createRouter({
         parentNavigatorKey: _rootKey,
         builder: (_, state) =>
             PlantDetailScreen(plantId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/plans',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const PlansScreen(),
+      ),
+      GoRoute(
+        path: '/checkout/:planId',
+        parentNavigatorKey: _rootKey,
+        builder: (_, state) =>
+            CheckoutScreen(planId: state.pathParameters['planId']!),
       ),
       GoRoute(
         path: '/store',

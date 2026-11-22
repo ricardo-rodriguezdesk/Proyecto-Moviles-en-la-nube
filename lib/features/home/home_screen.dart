@@ -172,7 +172,11 @@ class HomeScreen extends StatelessWidget {
                 ),
                 _PlantCarousel(plants: petFriendly),
                 const SizedBox(height: 16),
-                _SectionHeader(title: 'Planes mensuales'),
+                _SectionHeader(
+                  title: 'Planes mensuales',
+                  action: 'Ver planes',
+                  onAction: () => context.push('/plans'),
+                ),
                 _PlansRow(plans: catalog.plans),
               ],
 
@@ -377,10 +381,7 @@ class _PlansRow extends StatelessWidget {
               color: p.highlight ? scheme.primaryContainer : null,
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
-                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Las suscripciones llegan pronto 🌱')),
-                ),
+                onTap: () => context.push('/plans'),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(

@@ -12,26 +12,28 @@ service cloud.firestore {
       return signedIn() && request.auth.uid == uid;
     }
 
-    // Catálogo del vivero: cualquier usuario con sesión puede leerlo.
-    // La escritura está abierta a usuarios con sesión SOLO para cargar el
-    // catálogo de ejemplo. Antes de entregar: cambiar a `if false`.
+    // Catálogo del vivero: solo lectura desde la app.
     match /plants/{plantId} {
       allow read: if signedIn();
-      allow write: if signedIn();
+      allow write: if false;
     }
 
     match /plans/{planId} {
       allow read: if signedIn();
-      allow write: if signedIn();
+      allow write: if false;
     }
 
-    // Cada usuario solo puede leer y escribir su propio perfil
-    // y sus propias notificaciones.
+    // Cada usuario solo accede a su perfil, notificaciones y pagos.
     match /users/{uid} {
       allow read, write: if isOwner(uid);
 
       match /notifications/{notificationId} {
         allow read, write: if isOwner(uid);
+      }
+
+      match /payments/{paymentId} {
+        allow read, create: if isOwner(uid);
+        allow update, delete: if false;
       }
     }
   }

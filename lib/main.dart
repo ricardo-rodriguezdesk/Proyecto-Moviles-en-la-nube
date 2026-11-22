@@ -14,11 +14,13 @@ import 'providers/connectivity_provider.dart';
 import 'providers/notification_inbox.dart';
 import 'providers/onboarding_provider.dart';
 import 'providers/session_provider.dart';
+import 'providers/subscription_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/topics_provider.dart';
 import 'services/auth_service.dart';
 import 'services/firestore_service.dart';
 import 'services/notification_service.dart';
+import 'services/payment_service.dart';
 import 'services/storage_service.dart';
 
 Future<void> main() async {
@@ -33,6 +35,13 @@ Future<void> main() async {
 
   final prefs = await SharedPreferences.getInstance();
 
+  // Stripe (modo prueba). Si falla, la app sigue funcionando sin pagos.
+  try {
+    await PaymentService.init();
+  } catch (e) {
+    debugPrint('[Stripe] No se pudo iniciar: $e');
+  }
+
   // Servicios.
   final authService = AuthService();
   final firestore = FirestoreService();
@@ -46,6 +55,7 @@ Future<void> main() async {
   final topics = TopicsProvider(prefs);
   final catalog = CatalogProvider(firestore);
   final connectivity = ConnectivityProvider();
+  final subscription = SubscriptionProvider(firestore);
   final router = createRouter(session: session, onboarding: onboarding);
 
   // Cuando cambia la sesión: crear/actualizar el perfil en Firestore,
@@ -54,6 +64,7 @@ Future<void> main() async {
   void syncSession() {
     final user = session.user;
     inbox.attachUser(user?.uid);
+    subscription.attachUser(user?.uid);
     catalog.setActive(user != null);
     if (user != null && user.uid != lastUid) {
       firestore.ensureUserDoc(user).catchError(
@@ -87,6 +98,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: topics),
         ChangeNotifierProvider.value(value: catalog),
         ChangeNotifierProvider.value(value: connectivity),
+        ChangeNotifierProvider.value(value: subscription),
       ],
       child: const LumenApp(),
     ),

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/onboarding_provider.dart';
 import '../../providers/session_provider.dart';
+import '../../providers/subscription_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/firestore_service.dart';
@@ -50,6 +51,7 @@ class _ProfileView extends StatelessWidget {
     final c = context.watch<ProfileController>();
     final session = context.watch<SessionProvider>();
     final themeProvider = context.watch<ThemeProvider>();
+    final sub = context.watch<SubscriptionProvider>().active;
     final user = session.user;
     final text = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
@@ -230,13 +232,13 @@ class _ProfileView extends StatelessWidget {
                       leading: Icon(Icons.workspace_premium_outlined,
                           color: scheme.primary),
                       title: const Text('Mi plan'),
-                      subtitle: const Text('Sin plan activo'),
+                      subtitle: Text(sub == null
+                          ? 'Sin plan activo · ver planes'
+                          : '${sub.planName} · \$${sub.price.toStringAsFixed(0)}'
+                              '/mes · próximo cobro '
+                              '${sub.nextCharge.day}/${sub.nextCharge.month}'),
                       trailing: const Icon(Icons.chevron_right),
-                      // Se conecta en el paso de pagos.
-                      onTap: () => showMessage(
-                        ScaffoldMessenger.of(context),
-                        'Los planes llegan pronto 🌱',
-                      ),
+                      onTap: () => context.push('/plans'),
                     ),
                   ],
                 ),

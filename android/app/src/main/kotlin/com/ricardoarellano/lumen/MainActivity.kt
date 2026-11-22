@@ -5,7 +5,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
@@ -19,7 +19,7 @@ import io.flutter.plugin.common.MethodChannel
  * El sensor solo se registra mientras Flutter escucha (onListen) y se libera
  * al dejar de escuchar (onCancel), para no gastar batería.
  */
-class MainActivity : FlutterActivity() {
+class MainActivity : FlutterFragmentActivity() {
 
     private var lightListener: SensorEventListener? = null
 

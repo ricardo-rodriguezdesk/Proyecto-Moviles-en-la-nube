@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../data/seed_data.dart';
 import '../models/plan.dart';
 import '../models/plant.dart';
+import '../providers/subscription_provider.dart';
+import 'payment_service.dart';
 import '../providers/notification_inbox.dart';
 
 /// Todo el acceso a Cloud Firestore pasa por aquí.
@@ -85,6 +87,48 @@ class FirestoreService {
     };
     return _users.doc(uid).set(data, SetOptions(merge: true));
   }
+
+  // ---------------- Suscripción ----------------
+
+  Stream<ActiveSubscription?> subscriptionStream(String uid) =>
+      _users.doc(uid).snapshots().map((doc) {
+        final sub = doc.data()?['subscription'];
+        return sub is Map<String, dynamic>
+            ? ActiveSubscription.fromMap(sub)
+            : null;
+      });
+
+  /// Guarda la suscripción en el perfil y el pago en users/{uid}/payments.
+  Future<void> saveSubscription(String uid, Plan plan, PaymentResult pay) {
+    final batch = _db.batch();
+    batch.set(
+      _users.doc(uid),
+      {
+        'subscription': {
+          'planId': plan.id,
+          'planName': plan.name,
+          'price': plan.price,
+          'since': FieldValue.serverTimestamp(),
+          'paymentId': pay.id,
+        },
+      },
+      SetOptions(merge: true),
+    );
+    batch.set(_users.doc(uid).collection('payments').doc(pay.id), {
+      'planId': plan.id,
+      'amount': plan.price,
+      'currency': 'mxn',
+      'provider': 'stripe',
+      'mode': pay.mode,
+      'cardLast4': pay.last4,
+      'cardBrand': pay.brand,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+    return batch.commit();
+  }
+
+  Future<void> cancelSubscription(String uid) =>
+      _users.doc(uid).update({'subscription': FieldValue.delete()});
 
   Future<void> saveFcmToken(String uid, String token) =>
       _users.doc(uid).set({'fcmToken': token}, SetOptions(merge: true));
