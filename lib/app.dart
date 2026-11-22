@@ -21,6 +21,9 @@ class LumenApp extends StatelessWidget {
       themeMode: themeMode,
       // Permite que el listener global de notificaciones muestre avisos
       // en cualquier pantalla.
+      // Sin el efecto de "estirar" de Android 12+ al llegar al final de
+      // una lista: el scroll simplemente se detiene.
+      scrollBehavior: const MaterialScrollBehavior().copyWith(overscroll: false),
       scaffoldMessengerKey: rootMessengerKey,
       routerConfig: context.read<GoRouter>(),
     );
