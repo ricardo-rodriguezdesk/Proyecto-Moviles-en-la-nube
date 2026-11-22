@@ -88,6 +88,14 @@ class AuthService {
     }
   }
 
+  /// GitHub por código (Device Flow): con el token que entrega GitHub se
+  /// inicia sesión en Firebase. Ver features/auth/github_device_flow.dart.
+  Future<void> signInWithGithubToken(String accessToken) async {
+    await _auth.signInWithCredential(
+      GithubAuthProvider.credential(accessToken),
+    );
+  }
+
   Future<void> signInWithGithub() async {
     final provider = GithubAuthProvider()..addScope('read:user');
     await _auth.signInWithProvider(provider);

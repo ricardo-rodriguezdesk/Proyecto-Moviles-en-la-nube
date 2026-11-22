@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../core/utils/validators.dart';
 import '../../services/auth_service.dart';
 import 'auth_form_controller.dart';
+import 'github_device_flow.dart';
 import 'widgets/auth_widgets.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -103,7 +104,7 @@ class _LoginView extends StatelessWidget {
         SocialButton(
           icon: FontAwesomeIcons.github,
           label: 'Continuar con GitHub',
-          onPressed: c.loading ? null : () => submitSocial(c.loginWithGithub),
+          onPressed: c.loading ? null : () => showGithubDeviceFlow(context),
         ),
         const SizedBox(height: 24),
         Row(
