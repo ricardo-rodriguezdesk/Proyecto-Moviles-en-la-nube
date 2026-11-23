@@ -111,6 +111,13 @@ flutter emulators --launch Pixel_10
 flutter run --release --dart-define-from-file=stripe.json
 ```
 
+### Notas al clonar en otra computadora
+- **Firebase ya está configurado:** `lib/firebase_options.dart` y `android/app/google-services.json` apuntan al proyecto `lumen-vivero`, así que no hace falta correr `flutterfire configure`.
+- **El catálogo ya está cargado** en Firestore. El botón "Cargar catálogo" solo aparece si la colección está vacía, y las reglas actuales no permiten escribir el catálogo desde la app.
+- **Inicio con Google:** Firebase solo acepta la huella SHA-1 registrada. En otra computadora hay que agregar su SHA-1 en la consola de Firebase (`cd android && ./gradlew signingReport`). Correo y GitHub funcionan sin cambios.
+- **Inicio con GitHub:** usa Device Flow, que debe estar activado en la OAuth App de GitHub ("Enable Device Flow").
+- **Sin `stripe.json`** la app funciona igual, pero la pantalla de pago avisa que faltan las llaves.
+
 ### Para probar en el emulador
 - **Luz:** ⋯ → Virtual sensors → Additional sensors → Light (lux).
 - **Huella:** configura un PIN y una huella en Ajustes; luego ⋯ → Fingerprint → Touch Sensor.
