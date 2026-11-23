@@ -20,6 +20,35 @@ Autor: **Ricardo Rodríguez Arellano** (21031301) · Profesor: Ruben Torres Fria
 | **Suscripciones** | Planes Brote, Jardín y Selva; formulario nativo de tarjeta de Stripe; confirmación con huella; cobro en modo prueba de Stripe. |
 | **Interfaz** | Material 3, fuentes Fraunces e Inter, tema claro y oscuro, onboarding, diseño responsivo (barra inferior o lateral según el ancho) y caché de imágenes sin conexión. |
 
+## Capturas
+
+### Onboarding
+![Onboarding de tres pantallas](docs/capturas/onboarding.png)
+
+### Inicio de sesión
+![Inicio de sesión, registro, recuperación de contraseña y perfil](docs/capturas/auth_correo.png)
+
+![Google con selector nativo y GitHub con código de dispositivo](docs/capturas/auth_proveedores.png)
+
+### Inicio, catálogo y detalle
+![Inicio en modo oscuro y claro, catálogo y detalle de planta](docs/capturas/ui.png)
+
+### Medidor de luz y mapa del vivero
+![Medidor de luz con CustomPainter y mapa nativo](docs/capturas/sensor_mapa.png)
+
+### Notificaciones en los tres estados
+![Notificación en primer plano, segundo plano, app cerrada e historial](docs/capturas/notificaciones.png)
+
+### Suscripción con Stripe y huella
+![Planes, tarjeta, huella, pago exitoso y tarjeta rechazada](docs/capturas/pagos.png)
+
+![Panel de Stripe en modo prueba](docs/capturas/stripe.png)
+
+### Foto de perfil, sin conexión y diseño responsivo
+![Foto de perfil cambiada, visible en el perfil y en el inicio sin conexión](docs/capturas/foto_perfil.png)
+
+![Aviso sin conexión y vista horizontal con barra lateral](docs/capturas/offline_horizontal.png)
+
 ## Tecnologías
 
 - **Flutter 3.47 / Dart 3.13** · Android (emulador Pixel, API 37)
