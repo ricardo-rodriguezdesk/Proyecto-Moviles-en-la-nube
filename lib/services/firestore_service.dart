@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -83,10 +86,33 @@ class FirestoreService {
     final data = <String, dynamic>{
       if (name != null) 'name': name,
       if (photoUrl != null) 'photoUrl': photoUrl,
+      // Si la foto ya está en Storage, se borra el respaldo de Firestore.
+      if (photoUrl != null) 'avatarData': FieldValue.delete(),
       'updatedAt': FieldValue.serverTimestamp(),
     };
     return _users.doc(uid).set(data, SetOptions(merge: true));
   }
+
+  // ------------- Foto de perfil (respaldo en Firestore) -------------
+
+  /// Respaldo cuando Firebase Storage no está disponible: la imagen
+  /// (512 px, JPEG comprimido) se guarda en base64 dentro del perfil.
+  Future<void> saveAvatarData(String uid, Uint8List bytes) =>
+      _users.doc(uid).set({
+        'avatarData': base64Encode(bytes),
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+  Stream<Uint8List?> avatarStream(String uid) =>
+      _users.doc(uid).snapshots().map((doc) {
+        final data = doc.data()?['avatarData'];
+        if (data is! String || data.isEmpty) return null;
+        try {
+          return base64Decode(data);
+        } catch (_) {
+          return null;
+        }
+      });
 
   // ---------------- Suscripción ----------------
 

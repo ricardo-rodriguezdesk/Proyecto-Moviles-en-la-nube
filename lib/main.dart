@@ -9,6 +9,7 @@ import 'app.dart';
 import 'core/app_keys.dart';
 import 'core/router/app_router.dart';
 import 'firebase_options.dart';
+import 'providers/avatar_provider.dart';
 import 'providers/catalog_provider.dart';
 import 'providers/connectivity_provider.dart';
 import 'providers/notification_inbox.dart';
@@ -56,6 +57,7 @@ Future<void> main() async {
   final catalog = CatalogProvider(firestore);
   final connectivity = ConnectivityProvider();
   final subscription = SubscriptionProvider(firestore);
+  final avatar = AvatarProvider(firestore);
   final router = createRouter(session: session, onboarding: onboarding);
 
   // Cuando cambia la sesión: crear/actualizar el perfil en Firestore,
@@ -65,6 +67,7 @@ Future<void> main() async {
     final user = session.user;
     inbox.attachUser(user?.uid);
     subscription.attachUser(user?.uid);
+    avatar.attachUser(user?.uid);
     catalog.setActive(user != null);
     if (user != null && user.uid != lastUid) {
       firestore.ensureUserDoc(user).catchError(
@@ -99,6 +102,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: catalog),
         ChangeNotifierProvider.value(value: connectivity),
         ChangeNotifierProvider.value(value: subscription),
+        ChangeNotifierProvider.value(value: avatar),
       ],
       child: const LumenApp(),
     ),

@@ -55,16 +55,26 @@ class ProfileController extends ChangeNotifier {
     _uploading = true;
     _notify();
     try {
+      // 1) Firebase Storage (opción principal).
       final url = await storage.uploadAvatar(user.uid, File(picked.path));
       await auth.updatePhotoUrl(url);
       await firestore.updateProfile(user.uid, photoUrl: url);
       return 'Foto actualizada ✓';
     } on FirebaseException catch (e) {
-      debugPrint('[Perfil] Error de Firebase: ${e.code} ${e.message}');
-      if (e.code == 'unauthorized') {
-        return 'Sin permiso para subir la foto. Revisa las reglas de Storage.';
+      debugPrint('[Perfil] Storage no disponible (${e.code}); '
+          'se usa el respaldo en Firestore.');
+      // 2) Respaldo: la foto comprimida se guarda en Firestore.
+      try {
+        final bytes = await picked.readAsBytes();
+        if (bytes.length > 700 * 1024) {
+          return 'La foto es demasiado grande. Elige otra.';
+        }
+        await firestore.saveAvatarData(user.uid, bytes);
+        return 'Foto actualizada ✓';
+      } catch (e2) {
+        debugPrint('[Perfil] Error en el respaldo: $e2');
+        return 'No se pudo guardar la foto. Revisa tu conexión.';
       }
-      return 'No se pudo subir la foto (${e.code}).';
     } catch (e) {
       debugPrint('[Perfil] Error: $e');
       return 'No se pudo subir la foto. Revisa tu conexión.';

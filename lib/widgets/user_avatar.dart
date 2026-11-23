@@ -1,5 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/avatar_provider.dart';
 
 /// Foto del usuario (de su proveedor o la que subió).
 /// Se usa en el inicio y en el perfil, así ambos muestran siempre la misma.
@@ -16,12 +19,19 @@ class UserAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final url = photoUrl;
-    final hasPhoto = url != null && url.isNotEmpty;
+    // Foto subida por el usuario y guardada en Firestore (respaldo de
+    // Storage): tiene prioridad sobre la del proveedor.
+    final saved = context.watch<AvatarProvider>().bytes;
+    final hasPhoto = saved != null || (url != null && url.isNotEmpty);
+
+    final ImageProvider? image = saved != null
+        ? MemoryImage(saved)
+        : (hasPhoto ? CachedNetworkImageProvider(url!) : null);
 
     return CircleAvatar(
       radius: radius,
       backgroundColor: scheme.primaryContainer,
-      backgroundImage: hasPhoto ? CachedNetworkImageProvider(url) : null,
+      backgroundImage: image,
       // Si falla (sin internet y sin caché), solo se queda el color de fondo.
       onBackgroundImageError: hasPhoto ? (_, __) {} : null,
       child: hasPhoto
